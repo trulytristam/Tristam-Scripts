@@ -1,0 +1,407 @@
+// Show console messages
+// EEL Script for Reaper
+// Author : X-Raym
+// Source : GitHub > X-Raym > EEL Scripts for Cockos REAPER
+// Source URI : https://github.com/X-Raym/REAPER-EEL-Scripts
+// Licence : GPL v3
+// Release Date : 12-01-2015
+// Version : 1.7
+// Version Date : 02-02-2015
+// Required : Reaper 4.76
+
+// From : "name" variable in RPR_EnumProjectMarkers3 - Cockos Confederated Forums
+// http://forum.cockos.com/showthread.php?t=136047
+// Based on spk77's source
+
+// X-Raym contribution for conditional debugging, stard, end and text/line functions,
+// Add the next block comment at the begining of your script file, if you not use X-Raym's template:
+
+/*
+// ----- DEBUGGING ====>@import ../Functions/X-Raym_Functions - console debug messages.eel
+
+debug = 0; // 0 => No console. 1 => Display console messages for debugging.
+clean = 0; // 0 => No console cleaning before every script execution. 1 => Console cleaning before every script execution.
+
+msg_clean();
+// <==== DEBUGGING -----
+*/
+
+// Strings
+function msg_s(variable)
+(
+	debug === 1 ? (
+		strlen(variable) > 0 ? (
+			ShowConsoleMsg(variable);
+			ShowConsoleMsg("\n");
+		):(
+			ShowConsoleMsg("ERROR : Empty String");
+			ShowConsoleMsg("\n");
+		);
+	);
+);
+
+// Strings with text and lines
+function msg_stl(text,variable,line)
+(
+	debug === 1 ? (
+		strlen(text) > 0 ? (
+			msg_s(text);
+		);
+		strlen(variable) > 0 ? (
+			ShowConsoleMsg(variable);
+		):(
+			ShowConsoleMsg("ERROR : Empty String");
+		);
+		line === 0 ?(
+			ShowConsoleMsg("\n");
+		):(
+			ShowConsoleMsg("\n-----\n");
+		);
+	);
+);
+
+// Double
+function msg_d(variable)
+(
+	debug === 1 ? (
+		sprintf(str, "%d", variable);
+		ShowConsoleMsg(str);
+		ShowConsoleMsg("\n");
+	);
+);
+
+// Double with text and lines
+function msg_dtl(text,variable,line)
+(
+	debug === 1 ? (
+		strlen(text) > 0 ? (
+			msg_s(text);
+		);
+		sprintf(str, "%d", variable);
+		ShowConsoleMsg(str);
+		line === 0 ?(
+			ShowConsoleMsg("\n");
+		):(
+			ShowConsoleMsg("\n-----\n");
+		);
+	);
+);
+
+// Float
+function msg_f(variable)
+(
+	debug === 1 ? (
+		sprintf(str, "%f", variable);
+		ShowConsoleMsg(str);
+		ShowConsoleMsg("\n");
+	);
+);
+
+// Float with text and lines
+function msg_ftl(text,variable,line)
+(
+	debug === 1 ? (
+		strlen(text) > 0 ? (
+			msg_s(text);
+		);
+		sprintf(str, "%f", variable);
+		ShowConsoleMsg(str);
+		line === 0 ?(
+			ShowConsoleMsg("\n");
+		):(
+			ShowConsoleMsg("\n-----\n");
+		);
+	);
+);
+
+
+// Clean
+function msg_clean()
+(
+	//debug === 1 ? (
+		clean === 1 ? (
+			ShowConsoleMsg("");
+		);
+	//);
+);
+
+// Start
+function msg_start()
+(
+	debug === 1 ? (
+		ShowConsoleMsg("▼▼▼▼▼");
+		ShowConsoleMsg("\n");
+	);
+);
+
+// End
+function msg_end()
+(
+	debug === 1 ? (
+		ShowConsoleMsg("▲▲▲▲▲");
+		ShowConsoleMsg("\n"); // In case of clean = 0;
+	);
+);
+
+// MULTI-PURPOSE FUNCTION
+// Text is string
+// Variable is your variable
+// Output format are string "%s", integer "%d", and floating point "%f"
+// Debug value can be overide localy with 0 and 1.
+// Line is bolean
+//
+// Example:
+// msg_tvold("My variable", variableString, "%s", 1, debug)
+// will ouput in the console :
+//
+// My variable
+// *value of variableString* formated into string
+// -----
+// Only if global debug is set to 1 in file header.
+//
+// All variables can be set to 0
+function msg_tvold(text,variable,output,line,debug)
+(
+
+	// STORE GLOBAL DEBUG STATE
+	debugInit = debug;
+
+	debug === 1 ? (
+
+		// CHECK TEXT
+		strlen(text) > 0 ? (
+			ShowConsoleMsg(text);
+			ShowConsoleMsg("\n");
+		):(
+			ShowConsoleMsg("ERROR : Empty String");
+			ShowConsoleMsg("\n");
+		);
+
+		// OUTPUT FLOAT
+		strcmp("%f",output) === 0 ? (
+			sprintf(str, "%f", variable);
+			ShowConsoleMsg(str);
+		);
+
+			// OUTPUT DECIMAL
+		strcmp("%d",output) === 0 ? (
+			sprintf(str, "%d", variable);
+			ShowConsoleMsg(str);
+		);
+
+		strcmp("%x",output) === 0 ? (
+			sprintf(str, "%x", variable);
+			ShowConsoleMsg(str);
+		);
+
+			// OUTPUT STRING
+		output === "%s" ? (
+			strlen(variable) > 0 ? (
+				ShowConsoleMsg(variable);
+			):(
+				ShowConsoleMsg("EMPTY STRING");
+			);
+		);
+
+		// OUTPUT LINE
+		line === 0 ? (
+			ShowConsoleMsg("\n");
+			):(
+			ShowConsoleMsg("\n-----\n");
+		);
+
+	);
+
+	// RESTORE PREVIOUS GLOBAL DEBUG
+	debug = debugInit;
+);
+
+function msg_tvoldi(text,variable,output,line,debug,inline)
+(
+
+	// STORE GLOBAL DEBUG STATE
+	debugInit = debug;
+
+	debug === 1 ? (
+
+		// CHECK TEXT
+		strlen(text) > 0 ? (
+			ShowConsoleMsg(text);
+				inline === 0 ? (
+					ShowConsoleMsg("\n");
+				);
+			):(
+				ShowConsoleMsg("ERROR : Empty String");
+				inline === 0 ? (
+					ShowConsoleMsg("\n");
+				);
+			);
+
+		// OUTPUT FLOAT
+		strcmp("%f",output) === 0 ? (
+			sprintf(str, "%f", variable);
+			ShowConsoleMsg(str);
+		);
+
+			// OUTPUT DECIMAL
+		strcmp("%d",output) === 0 ? (
+			sprintf(str, "%d", variable);
+			ShowConsoleMsg(str);
+		);
+
+			// OUTPUT STRING
+		output === "%s" ? (
+			strlen(variable) > 0 ? (
+				ShowConsoleMsg(variable);
+			):(
+				ShowConsoleMsg("EMPTY STRING");
+			);
+		);
+
+		// OUTPUT LINE
+		line === 0 ?(
+			ShowConsoleMsg("\n");
+			):(
+			ShowConsoleMsg("\n-----\n");
+		);
+	);
+
+	// RESTORE PREVIOUS GLOBAL DEBUG
+	debug = debugInit;
+);
+
+// Debug
+
+function main()(
+	debug = 1;
+	clean = 1;
+
+
+
+  mem_off_tracks = 0;
+  total_mem_off = 0;
+
+  curpos = GetCursorPosition();
+
+	GetSet_LoopTimeRange2( 0, 0, 0, time_start, time_end, 0 );
+
+  i = 0;
+  m = CountSelectedMediaItems( 0 );
+  while(
+    item = GetSelectedMediaItem( 0, i );
+    item_track = GetMediaItemTrack( item );
+
+
+    mem[total_mem_off] == 0 ? (
+
+      mem[0] = item_track;
+      SetOnlyTrackSelected( item_track );
+      off_mem_tracks += 1;
+
+    ) : (
+      mem[off_mem_tracks-1] != item_track ? (
+
+        mem[off_mem_tracks] = item_track;
+        SetMediaTrackInfo_Value( item_track, "I_SELECTED", 1 );
+        off_mem_tracks += 1;
+
+
+      );
+
+    );
+    i+=1;
+    i < m;
+  );
+
+total_mem_off += mem_off_tracks;
+
+
+
+Main_OnCommand(41383,0); //copy smart
+
+offset_start = time_end;
+offset_end = time_end+(time_end-time_start) ;
+
+GetSet_LoopTimeRange2( 0, 1, 0, offset_start, offset_end, 0 );
+
+Main_OnCommand(40289,0); //unselect all items
+
+
+
+
+t = 0;
+
+
+loop(off_mem_tracks,
+
+
+
+  track = mem[t];
+
+  i = 0;
+
+  num_item =  CountTrackMediaItems( track );
+  loop(num_item,
+    item =  GetTrackMediaItem( track, i );
+
+    item_start =  GetMediaItemInfo_Value( item, "D_POSITION" );
+    item_end =  item_start + GetMediaItemInfo_Value( item, "D_LENGTH" );
+
+
+    //IF
+    (item_start < offset_start)&&(item_end > offset_start) ||
+    (item_start >= offset_start)&&(item_start < offset_end) ? (
+
+      SetMediaItemInfo_Value( item, "B_UISEL", 1);
+
+
+    );
+
+
+    item_start >= offset_end ? (
+      item = 5;
+    );
+
+    i +=1;
+  );
+
+  t+=1;
+);
+
+
+
+
+Main_OnCommand(40312,0); //clear
+
+
+
+
+Main_OnCommand(40914,0); //first selected track as last touched
+SetEditCurPos2( 0, offset_start, 0, 0 );
+Main_OnCommand(40058,0); //paste
+SetEditCurPos2( 0, curpos, 0, 0 );
+
+
+
+
+//msg_tvold("time_start",time_start,"%f",0,debug);
+//msg_tvold("time_end",time_end,"%f",0,debug);
+
+//msg_tvold("offset_start",offset_start,"%f",0,debug);
+//msg_tvold("offset_end",offset_end,"%f",0,debug);
+
+//	msg_tvold("Integer",integer,"%d",0,debug);
+//	msg_tvold("Float",float,"%f",0,debug);
+
+//	msg_tvoldi("String",string,"%s",0,debug,0);
+//	msg_tvoldi("Integer",integer,"%d",0,debug,0);
+//	msg_tvoldi("Float",float,"%f",0,debug,0);
+);
+
+
+
+PreventUIRefresh(-1 );
+Undo_BeginBlock2( 0 );
+main();
+Undo_EndBlock2( proj, "Main Duplicate", 0 );
+PreventUIRefresh(1 );

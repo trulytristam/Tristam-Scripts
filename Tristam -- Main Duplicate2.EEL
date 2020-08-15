@@ -1,0 +1,135 @@
+﻿
+
+function main()(
+	debug = 1;
+	clean = 1;
+
+
+
+  mem_off_tracks = 0;
+  total_mem_off = 0;
+
+  curpos = GetCursorPosition();
+
+	GetSet_LoopTimeRange2( 0, 0, 0, time_start, time_end, 0 );
+
+  i = 0;
+  m = CountSelectedMediaItems( 0 );
+  while(
+    item = GetSelectedMediaItem( 0, i );
+    item_track = GetMediaItemTrack( item );
+
+
+    mem[total_mem_off] == 0 ? (
+
+      mem[0] = item_track;
+      SetOnlyTrackSelected( item_track );
+      off_mem_tracks += 1;
+
+    ) : (
+      mem[off_mem_tracks-1] != item_track ? (
+
+        mem[off_mem_tracks] = item_track;
+        SetMediaTrackInfo_Value( item_track, "I_SELECTED", 1 );
+        off_mem_tracks += 1;
+
+
+      );
+
+    );
+    i+=1;
+    i < m;
+  );
+
+total_mem_off += mem_off_tracks;
+
+
+
+Main_OnCommand(41383,0); //copy smart
+
+offset_start = time_end;
+offset_end = time_end+(time_end-time_start) ;
+
+GetSet_LoopTimeRange2( 0, 1, 0, offset_start, offset_end, 0 );
+
+Main_OnCommand(40289,0); //unselect all items
+
+
+
+
+t = 0;
+
+
+loop(off_mem_tracks,
+
+
+
+  track = mem[t];
+
+  i = 0;
+
+  num_item =  CountTrackMediaItems( track );
+  loop(num_item,
+    item =  GetTrackMediaItem( track, i );
+
+    item_start =  GetMediaItemInfo_Value( item, "D_POSITION" );
+    item_end =  item_start + GetMediaItemInfo_Value( item, "D_LENGTH" );
+
+
+    //IF
+    (item_start < offset_start)&&(item_end > offset_start) ||
+    (item_start >= offset_start)&&(item_start < offset_end) ? (
+
+      SetMediaItemInfo_Value( item, "B_UISEL", 1);
+
+
+    );
+
+
+    item_start >= offset_end ? (
+      item = 5;
+    );
+
+    i +=1;
+  );
+
+  t+=1;
+);
+
+
+
+
+Main_OnCommand(40312,0); //clear
+
+
+
+
+Main_OnCommand(40914,0); //first selected track as last touched
+SetEditCurPos2( 0, offset_start, 0, 0 );
+Main_OnCommand(40058,0); //paste
+SetEditCurPos2( 0, curpos, 0, 0 );
+
+
+
+
+//msg_tvold("time_start",time_start,"%f",0,debug);
+//msg_tvold("time_end",time_end,"%f",0,debug);
+
+//msg_tvold("offset_start",offset_start,"%f",0,debug);
+//msg_tvold("offset_end",offset_end,"%f",0,debug);
+
+//	msg_tvold("Integer",integer,"%d",0,debug);
+//	msg_tvold("Float",float,"%f",0,debug);
+
+//	msg_tvoldi("String",string,"%s",0,debug,0);
+//	msg_tvoldi("Integer",integer,"%d",0,debug,0);
+//	msg_tvoldi("Float",float,"%f",0,debug,0);
+);
+
+
+
+PreventUIRefresh(-1 );
+Undo_BeginBlock2( 0 );
+main();
+Undo_EndBlock2( proj, "Main Duplicate", 0 );
+PreventUIRefresh(1 );
